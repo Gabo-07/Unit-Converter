@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertidor de Unidades</title>
+    <!-- Enlace al archivo CSS externo -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="converter-card">
+        <h1>Convertidor</h1>
+        
+        <!-- Pestañas (ahora usan data-target en lugar de onclick) -->
+        <div class="tabs">
+            <button class="tab-btn {{ 'active' if active_tab == 'length' else '' }}" data-target="length">Longitud</button>
+            <button class="tab-btn {{ 'active' if active_tab == 'weight' else '' }}" data-target="weight">Peso</button>
+            <button class="tab-btn {{ 'active' if active_tab == 'temperature' else '' }}" data-target="temperature">Temperatura</button>
+        </div>
+
+        <!-- Muestra el resultado si existe -->
+        {% if result %}
+        <div class="result-box">
+            <p>Resultado: <strong>{{ result }}</strong></p>
+        </div>
+        {% endif %}
+
+        <!-- Formulario: Longitud -->
+        <div id="length-tab" class="tab-content" style="display: {{ 'block' if active_tab == 'length' else 'none' }};">
+            <form action="/" method="POST">
+                <input type="hidden" name="category" value="length">
+                
+                <div class="form-group">
+                    <label>Valor:</label>
+                    <input type="number" step="any" name="value" required value="{{ form_data.value if form_data.category == 'length' else '' }}">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>De:</label>
+                        <select name="from_unit">
+                            {% set units = ['millimeter', 'centimeter', 'meter', 'kilometer', 'inch', 'foot', 'yard', 'mile'] %}
+                            {% set names = ['Milímetro', 'Centímetro', 'Metro', 'Kilómetro', 'Pulgada', 'Pie', 'Yarda', 'Milla'] %}
+                            {% for i in range(units|length) %}
+                                <option value="{{ units[i] }}" {{ 'selected' if form_data.category == 'length' and form_data.from_unit == units[i] else '' }}>{{ names[i] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>A:</label>
+                        <select name="to_unit">
+                            {% for i in range(units|length) %}
+                                <option value="{{ units[i] }}" {{ 'selected' if form_data.category == 'length' and form_data.to_unit == units[i] else '' }}>{{ names[i] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Convertir</button>
+            </form>
+        </div>
+
+        <!-- Formulario: Peso -->
+        <div id="weight-tab" class="tab-content" style="display: {{ 'block' if active_tab == 'weight' else 'none' }};">
+            <form action="/" method="POST">
+                <input type="hidden" name="category" value="weight">
+                
+                <div class="form-group">
+                    <label>Valor:</label>
+                    <input type="number" step="any" name="value" required value="{{ form_data.value if form_data.category == 'weight' else '' }}">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>De:</label>
+                        <select name="from_unit">
+                            {% set w_units = ['milligram', 'gram', 'kilogram', 'ounce', 'pound'] %}
+                            {% set w_names = ['Miligramo', 'Gramo', 'Kilogramo', 'Onza', 'Libra'] %}
+                            {% for i in range(w_units|length) %}
+                                <option value="{{ w_units[i] }}" {{ 'selected' if form_data.category == 'weight' and form_data.from_unit == w_units[i] else '' }}>{{ w_names[i] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>A:</label>
+                        <select name="to_unit">
+                            {% for i in range(w_units|length) %}
+                                <option value="{{ w_units[i] }}" {{ 'selected' if form_data.category == 'weight' and form_data.to_unit == w_units[i] else '' }}>{{ w_names[i] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Convertir</button>
+            </form>
+        </div>
+
+        <!-- Formulario: Temperatura -->
+        <div id="temperature-tab" class="tab-content" style="display: {{ 'block' if active_tab == 'temperature' else 'none' }};">
+            <form action="/" method="POST">
+                <input type="hidden" name="category" value="temperature">
+                
+                <div class="form-group">
+                    <label>Valor:</label>
+                    <input type="number" step="any" name="value" required value="{{ form_data.value if form_data.category == 'temperature' else '' }}">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>De:</label>
+                        <select name="from_unit">
+                            {% set t_units = ['Celsius', 'Fahrenheit', 'Kelvin'] %}
+                            {% for unit in t_units %}
+                                <option value="{{ unit }}" {{ 'selected' if form_data.category == 'temperature' and form_data.from_unit == unit else '' }}>{{ unit }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>A:</label>
+                        <select name="to_unit">
+                            {% for unit in t_units %}
+                                <option value="{{ unit }}" {{ 'selected' if form_data.category == 'temperature' and form_data.to_unit == unit else '' }}>{{ unit }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Convertir</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Enlace al archivo JS externo -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
